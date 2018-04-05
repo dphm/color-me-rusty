@@ -6,8 +6,7 @@
         let rgb = `rgb(${vals[0]}, ${vals[1]}, ${vals[2]})`
         document.body.style.backgroundColor = rgb
         document.getElementById('color').innerText = rgb
-      },
-      cos: Math.cos
+      }
     }
   }
 
