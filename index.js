@@ -21,5 +21,19 @@
     window.requestAnimationFrame(() => step(frame + 1))
   }
 
+  function padValue(value) {
+    if (typeof(value) !== 'number') {
+      throw new TypeError('Value must be a number!')
+    }
+    if (value < 0 || value > 255) {
+      throw new RangeError('Value must be between 0 and 255!')
+    }
+    var chars = value.toString().split('')
+    for (var i = chars.length; i < 3; i++) {
+      chars.unshift('0')
+    }
+    return chars.join('')
+  }
+
   window.requestAnimationFrame(step)
 })()
