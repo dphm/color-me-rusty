@@ -83,4 +83,5 @@ Thank you to the following people for contributing ideas and enthusiasm and/or p
 * [alexcoco](https://github.com/alexcoco)
 * [cfinucane](https://github.com/cfinucane)
 * [connorwalsh](https://github.com/connorwalsh)
+* [mkcor](https://github.com/mkcor)
 * [sarahwelzgeselowitz](https://github.com/sarahwelzgeselowitz)
