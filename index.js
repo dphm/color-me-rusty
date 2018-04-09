@@ -3,7 +3,11 @@
     env: {
       jsSetBackgroundColor: function(valsPtr) {
         let vals = new Uint8ClampedArray(mod.exports.memory.buffer, valsPtr, 3)
-        let rgb = `rgb(${vals[0]}, ${vals[1]}, ${vals[2]})`
+        let paddedVals = ['', '', '']
+        for (var i = 0; i < 3; i++) {
+          paddedVals[i] = padValue(vals[i])
+        }
+        let rgb = `rgb(${paddedVals[0]}, ${paddedVals[1]}, ${paddedVals[2]})`
         document.body.style.backgroundColor = rgb
         document.getElementById('color').innerText = rgb
       }
