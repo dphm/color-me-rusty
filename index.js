@@ -15,10 +15,10 @@
   const module = await WebAssembly.instantiate(bytes, imports)
   const mod = module.instance
 
-  var n = 0
-  function step() {
-    mod.exports.draw_frame(n++)
-    window.requestAnimationFrame(step)
+  function step(frame) {
+    if (!frame) frame = 0
+    mod.exports.draw_frame(frame)
+    window.requestAnimationFrame(() => step(frame + 1))
   }
 
   window.requestAnimationFrame(step)
