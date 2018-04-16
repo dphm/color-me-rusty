@@ -2,15 +2,17 @@
 pub struct Color(pub u8, pub u8, pub u8);
 
 impl Color {
-    pub fn interpolate_linear(colors: &[&Color], n: u32, num_frames: u32) -> Color {
+    pub fn interpolate_linear(colors: &[&Color], step: u32, num_steps: u32) -> Color {
         let num_colors = colors.len() as u32;
-        let end = num_frames * num_colors;
-        let frame = n % end;
+        if num_colors == 0 { panic!("expected colors"); }
+        if num_colors == 1 || num_steps == 0 { return colors[0].clone(); }
 
-        let a_i = (frame / num_frames) as usize;
-        let b_i = (a_i + 1) % num_colors as usize;
-
-        Color::step(colors[a_i], colors[b_i], n % num_frames, num_frames)
+        // Extend steps to interpolate from last to first color
+        let steps_per_color = num_steps / (num_colors - 1);
+        let end = num_steps + steps_per_color;
+        let from = ((step % end) / steps_per_color) as usize;
+        let to = (from + 1) % num_colors as usize;
+        Color::step(colors[from], colors[to], step % steps_per_color, steps_per_color)
     }
 
     pub fn step(from: &Color, to: &Color, step: u32, num_steps: u32) -> Color {
@@ -42,6 +44,7 @@ mod tests {
     const BLACK: Color = Color(0, 0, 0);
     const WHITE: Color = Color(255, 255, 255);
     const RED: Color = Color(255, 0, 0);
+    const GREEN: Color = Color(0, 255, 0);
     const BLUE: Color = Color(0, 0, 255);
 
     #[test]
@@ -108,5 +111,61 @@ mod tests {
         assert_eq!(RED, Color::step(&RED, &BLUE, 0, 2));
         assert_eq!(mid, Color::step(&RED, &BLUE, 1, 2));
         assert_eq!(BLUE, Color::step(&RED, &BLUE, 2, 2));
+    }
+
+    #[should_panic]
+    #[test]
+    fn interpolate_linear_no_colors() {
+        let colors = vec![];
+        Color::interpolate_linear(&colors, 0, 0);
+    }
+
+    #[test]
+    fn interpolate_linear_one_color() {
+        let colors = vec![&RED];
+        assert_eq!(RED, Color::interpolate_linear(&colors, 0, 1));
+        assert_eq!(RED, Color::interpolate_linear(&colors, 1, 1));
+        assert_eq!(RED, Color::interpolate_linear(&colors, 2, 1));
+    }
+
+    #[test]
+    fn interpolate_linear_two_colors() {
+        let colors = vec![&RED, &GREEN];
+        let mid = Color(127, 127, 0);
+        assert_eq!(RED, Color::interpolate_linear(&colors, 0, 2));
+        assert_eq!(mid, Color::interpolate_linear(&colors, 1, 2));
+        assert_eq!(GREEN, Color::interpolate_linear(&colors, 2, 2));
+        assert_eq!(mid, Color::interpolate_linear(&colors, 3, 2));
+        assert_eq!(RED, Color::interpolate_linear(&colors, 4, 2));
+    }
+
+    #[test]
+    fn interpolate_linear_three_colors() {
+        let colors = vec![&RED, &GREEN, &BLUE];
+        let mid_rg = Color(127, 127, 0);
+        let mid_gb = Color(0, 127, 127);
+        let mid_br = Color(127, 0, 127);
+        assert_eq!(RED, Color::interpolate_linear(&colors, 0, 4));
+        assert_eq!(mid_rg, Color::interpolate_linear(&colors, 1, 4));
+        assert_eq!(GREEN, Color::interpolate_linear(&colors, 2, 4));
+        assert_eq!(mid_gb, Color::interpolate_linear(&colors, 3, 4));
+        assert_eq!(BLUE, Color::interpolate_linear(&colors, 4, 4));
+        assert_eq!(mid_br, Color::interpolate_linear(&colors, 5, 4));
+        assert_eq!(RED, Color::interpolate_linear(&colors, 6, 4));
+    }
+
+    #[test]
+    fn interpolate_linear_three_colors_many_steps() {
+        let colors = vec![&RED, &GREEN, &BLUE];
+        let mid_rg = Color(127, 127, 0);
+        let mid_gb = Color(0, 127, 127);
+        let mid_br = Color(127, 0, 127);
+        assert_eq!(RED, Color::interpolate_linear(&colors, 0, 400));
+        assert_eq!(mid_rg, Color::interpolate_linear(&colors, 100, 400));
+        assert_eq!(GREEN, Color::interpolate_linear(&colors, 200, 400));
+        assert_eq!(mid_gb, Color::interpolate_linear(&colors, 300, 400));
+        assert_eq!(BLUE, Color::interpolate_linear(&colors, 400, 400));
+        assert_eq!(mid_br, Color::interpolate_linear(&colors, 500, 400));
+        assert_eq!(RED, Color::interpolate_linear(&colors, 600, 400));
     }
 }
