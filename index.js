@@ -3,7 +3,8 @@
     env: {
       jsSetBackgroundColor: function(valsPtr) {
         let vals = new Uint8ClampedArray(mod.exports.memory.buffer, valsPtr, 3)
-        let rgb = `rgb(${vals[0]}, ${vals[1]}, ${vals[2]})`
+        let paddedVals = Array.from(vals).map(padValue)
+        let rgb = `rgb(${paddedVals[0]}, ${paddedVals[1]}, ${paddedVals[2]})`
         document.body.style.backgroundColor = rgb
         document.getElementById('color').innerText = rgb
       }
@@ -23,10 +24,7 @@
 
   function padValue(value) {
     if (typeof(value) !== 'number') {
-      throw new TypeError('Value must be a number!')
-    }
-    if (value < 0 || value > 255) {
-      throw new RangeError('Value must be between 0 and 255!')
+      throw TypeError('Value must be a number!')
     }
     var chars = value.toString().split('')
     for (var i = chars.length; i < 3; i++) {
