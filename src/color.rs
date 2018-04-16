@@ -2,6 +2,17 @@
 pub struct Color(pub u8, pub u8, pub u8);
 
 impl Color {
+    pub fn interpolate_linear(colors: &[&Color], n: u32, num_frames: u32) -> Color {
+        let num_colors = colors.len() as u32;
+        let end = num_frames * num_colors;
+        let frame = n % end;
+
+        let a_i = (frame / num_frames) as usize;
+        let b_i = (a_i + 1) % num_colors as usize;
+
+        Color::step(colors[a_i], colors[b_i], n % num_frames, num_frames)
+    }
+
     pub fn step(from: &Color, to: &Color, step: u32, num_steps: u32) -> Color {
         if num_steps == 0 { return from.clone(); }
         let ratio = step as f32 / num_steps as f32;
