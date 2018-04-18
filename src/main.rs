@@ -11,9 +11,9 @@ extern {
 }
 
 #[no_mangle]
-pub extern fn draw_frame(n: u32) {
+pub extern fn set_background_color(step: u32) {
     let colors = vec![&RED, &GREEN, &BLUE];
-    let color = Color::interpolate_linear(&colors, n, 200);
+    let color = Color::interpolate_linear(&colors, step, 200);
     let vals = vec![color.0, color.1, color.2];
     unsafe { jsSetBackgroundColor(vals.as_ptr()); }
 }

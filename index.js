@@ -16,10 +16,10 @@
   const module = await WebAssembly.instantiate(bytes, imports)
   const mod = module.instance
 
-  function step(frame) {
-    if (!frame) frame = 0
-    mod.exports.draw_frame(frame)
-    window.requestAnimationFrame(() => step(frame + 1))
+  function render(step) {
+    if (!step) step = 0
+    mod.exports.set_background_color(step)
+    window.requestAnimationFrame(() => render(step + 1))
   }
 
   function padValue(value) {
@@ -33,5 +33,5 @@
     return chars.join('')
   }
 
-  window.requestAnimationFrame(step)
+  window.requestAnimationFrame(render)
 })()
