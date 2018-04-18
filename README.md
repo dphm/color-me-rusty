@@ -5,22 +5,20 @@ A demonstration in Rust + WebAssembly to set the background color of a webpage
 ## Files
 
 ```
-/color-me-rusty
-|-- /src
-|   |-- main.rs
-|   |-- colors.rs
-|
-|-- /target
-|   |-- /wasm32-unknown-unknown
-|   |-- |-- /release
-|   |-- |-- |-- color-me-rusty.wasm
-|
-|-- Cargo.toml
-|-- Cargo.lock
-|-- color-me-rusty.gc.wasm
-|-- index.html
-|-- index.js
-|-- README.md
+.
+├── src
+│   └── main.rs
+│   └── colors.rs
+├── target
+│   └── wasm32-unknown-unknown
+│       └── release
+│           └── color-me-rusty.wasm
+├── color-me-rusty.gc.wasm
+├── Cargo.lock
+├── Cargo.toml
+├── index.html
+├── index.js
+└── README.md
 ```
 
 ## Setup
