@@ -3,10 +3,6 @@ mod color;
 use color::Color;
 
 extern {
-    /// Sets the background color of an HTML document body.
-    ///
-    /// The color is specified by a pointer to a Vec<u8>
-    /// containing [red, green, blue] values.
     fn jsSetBackgroundColor(valsPtr: *const u8);
 }
 
@@ -52,9 +48,13 @@ extern {
 /// ```
 #[no_mangle]
 pub extern fn set_background_color(step: u32, num_steps: u32) {
-    let colors = vec![&Color::RED, &Color::GREEN, &Color::BLUE];
-    let color  = Color::interpolate_linear(&colors, step, num_steps);
-    unsafe { jsSetBackgroundColor(color.values().as_ptr()); }
+    let colors: Vec<&Color> = vec![&Color::RED, &Color::GREEN, &Color::BLUE];
+    let color:  Color      = Color::interpolate_linear(&colors, step as usize, num_steps as usize);
+    let values: Vec<u8>    = color.values();
+
+    // Pass a pointer to Vec<u8> of length 3, stored in WebAssembly linear memory
+    unsafe { jsSetBackgroundColor(values.as_ptr()); }
 }
 
+// Required to compile as a binary
 fn main() {}

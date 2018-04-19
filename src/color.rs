@@ -10,20 +10,25 @@ impl Color {
     pub const GREEN: Color = Color { red:   0, green: 255, blue:   0 };
     pub const BLUE:  Color = Color { red:   0, green:   0, blue: 255 };
 
-    pub fn interpolate_linear(colors: &[&Color], step: u32, num_steps: u32) -> Color {
-        let num_colors = colors.len() as u32;
+    /// Interpolates between every adjacent pair of colors in `num_steps` steps.
+    ///
+    /// It takes `num_steps` steps to interpolate from one color to the next.
+    /// The last color interpolates to the first color in `num_steps` steps.
+    ///
+    /// # Panics
+    ///
+    /// Panics when no colors are given.
+    pub fn interpolate_linear(colors: &[&Color], step: usize, num_steps: usize) -> Color {
+        let num_colors = colors.len();
         if num_colors == 0 { panic!("expected colors"); }
         if num_colors == 1 || num_steps == 0 { return colors[0].clone(); }
 
-        // Extend steps to interpolate from last to first color
-        let steps_per_color = num_steps / (num_colors - 1);
-        let end  = num_steps + steps_per_color;
-        let from = ((step % end) / steps_per_color) as usize;
-        let to   = (from + 1) % num_colors as usize;
-        Color::step(colors[from], colors[to], step % steps_per_color, steps_per_color)
+        let from = step / num_steps % num_colors;
+        let to   = (from + 1) % num_colors;
+        Color::step(colors[from], colors[to], step % num_steps, num_steps)
     }
 
-    pub fn step(from: &Color, to: &Color, step: u32, num_steps: u32) -> Color {
+    pub fn step(from: &Color, to: &Color, step: usize, num_steps: usize) -> Color {
         if num_steps == 0 { return from.clone(); }
         let ratio = step as f32 / num_steps as f32;
         Color {
@@ -157,13 +162,13 @@ mod tests {
         let mid_rg = Color { red: 127, green: 127, blue:   0 };
         let mid_gb = Color { red:   0, green: 127, blue: 127 };
         let mid_br = Color { red: 127, green:   0, blue: 127 };
-        assert_eq!(RED,    Color::interpolate_linear(&colors, 0, 4));
-        assert_eq!(mid_rg, Color::interpolate_linear(&colors, 1, 4));
-        assert_eq!(GREEN,  Color::interpolate_linear(&colors, 2, 4));
-        assert_eq!(mid_gb, Color::interpolate_linear(&colors, 3, 4));
-        assert_eq!(BLUE,   Color::interpolate_linear(&colors, 4, 4));
-        assert_eq!(mid_br, Color::interpolate_linear(&colors, 5, 4));
-        assert_eq!(RED,    Color::interpolate_linear(&colors, 6, 4));
+        assert_eq!(RED,    Color::interpolate_linear(&colors, 0, 2));
+        assert_eq!(mid_rg, Color::interpolate_linear(&colors, 1, 2));
+        assert_eq!(GREEN,  Color::interpolate_linear(&colors, 2, 2));
+        assert_eq!(mid_gb, Color::interpolate_linear(&colors, 3, 2));
+        assert_eq!(BLUE,   Color::interpolate_linear(&colors, 4, 2));
+        assert_eq!(mid_br, Color::interpolate_linear(&colors, 5, 2));
+        assert_eq!(RED,    Color::interpolate_linear(&colors, 6, 2));
     }
 
     #[test]
@@ -172,13 +177,13 @@ mod tests {
         let mid_rg = Color { red: 127, green: 127, blue:   0 };
         let mid_gb = Color { red:   0, green: 127, blue: 127 };
         let mid_br = Color { red: 127, green:   0, blue: 127 };
-        assert_eq!(RED,    Color::interpolate_linear(&colors,   0, 400));
-        assert_eq!(mid_rg, Color::interpolate_linear(&colors, 100, 400));
-        assert_eq!(GREEN,  Color::interpolate_linear(&colors, 200, 400));
-        assert_eq!(mid_gb, Color::interpolate_linear(&colors, 300, 400));
-        assert_eq!(BLUE,   Color::interpolate_linear(&colors, 400, 400));
-        assert_eq!(mid_br, Color::interpolate_linear(&colors, 500, 400));
-        assert_eq!(RED,    Color::interpolate_linear(&colors, 600, 400));
+        assert_eq!(RED,    Color::interpolate_linear(&colors,   0, 200));
+        assert_eq!(mid_rg, Color::interpolate_linear(&colors, 100, 200));
+        assert_eq!(GREEN,  Color::interpolate_linear(&colors, 200, 200));
+        assert_eq!(mid_gb, Color::interpolate_linear(&colors, 300, 200));
+        assert_eq!(BLUE,   Color::interpolate_linear(&colors, 400, 200));
+        assert_eq!(mid_br, Color::interpolate_linear(&colors, 500, 200));
+        assert_eq!(RED,    Color::interpolate_linear(&colors, 600, 200));
     }
 
     #[test]
