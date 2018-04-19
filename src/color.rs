@@ -28,6 +28,7 @@ impl Color {
         Color::step(colors[from], colors[to], step % num_steps, num_steps)
     }
 
+    /// Returns the color with values `step` of `num_steps` between `from` and `to`.
     pub fn step(from: &Color, to: &Color, step: usize, num_steps: usize) -> Color {
         if num_steps == 0 { return from.clone(); }
         let ratio = step as f32 / num_steps as f32;
@@ -38,10 +39,16 @@ impl Color {
         }
     }
 
+    /// Returns values as a Vec<u8> of length 3.
     pub fn values(&self) -> Vec<u8> {
         vec![self.red, self.green, self.blue]
     }
 
+    /// Returns the value between `from` and `to`.
+    ///
+    /// A ratio of 0.0 is `from`.
+    /// A ratio of 0.5 is half way between `from` and `to`.
+    /// A ratio of 1.0 is `to`.
     fn val_between(from: u8, to: u8, ratio: f32) -> u8 {
         let (min, max) = if from < to { (from, to) } else { (to, from) };
         let diff  = max - min;
