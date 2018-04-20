@@ -8,7 +8,6 @@ extern {
 
 /// Sets the color to a frame of a linear cycle through red, green, blue.
 ///
-/// The color cycles linearly through red, green, and blue.
 /// It takes `frames_per_color` frames to interpolate from red to green,
 /// and `frames_per_color` frames to interpolate from green to blue.
 ///
