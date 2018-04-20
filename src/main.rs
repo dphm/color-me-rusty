@@ -3,16 +3,16 @@ mod color;
 use color::Color;
 
 extern {
-    fn jsSetBackgroundColor(valsPtr: *const u8);
+    fn setColor(ptr: *const u8);
 }
 
-/// Sets the background color of an HTML document based on the current step.
+/// Sets the color to a frame of a linear cycle through red, green, blue.
 ///
 /// The color cycles linearly through red, green, and blue.
-/// It takes `num_steps` steps to interpolate from red to green,
-/// and `num_steps` steps to interpolate from green to blue.
+/// It takes `frames_per_color` frames to interpolate from red to green,
+/// and `frames_per_color` frames to interpolate from green to blue.
 ///
-/// When `step as f32 / num_steps as f32` is:
+/// When `frame` of `frames_per_color` is:
 /// * `0.0`, then the color is red.
 /// * `0.5`, then the color is between red and green.
 /// * `1.0`, then the color is green.
@@ -30,30 +30,25 @@ extern {
 /// (async function() {
 ///   const wasm = await fetch('path/to/color-me-rusty.wasm')
 ///   const bytes = await wasm.arrayBuffer()
-///   const module = await WebAssembly.instantiate(bytes, {
-///     env: {
-///       jsSetBackgroundColor
-///     }
-///   })
+///   const module = await WebAssembly.instantiate(bytes, { env: { setColor }})
 ///
-///   function jsSetBackgroundColor(valsPtr) {
+///   function setColor(valsPtr) {
 ///     let vals = new Uint8ClampedArray(module.instance.exports.memory.buffer, valsPtr, 3)
 ///     let rgb = `rgb(${vals[0]}, ${vals[1]}, ${vals[2]})`
 ///     document.body.style.backgroundColor = rgb
 ///   }
 ///
-///   // Sets the document body background color to blue.
-///   module.instance.exports.set_background_color(200, 100)
+///   // Calls setColor with a pointer to [0, 255, 0],
+///   // stored in WebAssembly linear memory
+///   module.instance.exports.set_frame_color(100, 100)
 /// })()
 /// ```
 #[no_mangle]
-pub extern fn set_background_color(step: u32, num_steps: u32) {
+pub extern "C" fn set_frame_color(frame: u32, frames_per_color: u32) {
     let colors: Vec<&Color> = vec![&Color::RED, &Color::GREEN, &Color::BLUE];
-    let color:  Color      = Color::interpolate_linear(&colors, step as usize, num_steps as usize);
-    let values: Vec<u8>    = color.values();
-
-    // Pass a pointer to Vec<u8> of length 3, stored in WebAssembly linear memory
-    unsafe { jsSetBackgroundColor(values.as_ptr()); }
+    let color: Color = Color::interpolate_linear(&colors, frame as usize, frames_per_color as usize);
+    let vals: Vec<u8> = color.values();
+    unsafe { setColor(vals.as_ptr()); }
 }
 
 // Required to compile as a binary

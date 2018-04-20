@@ -10,28 +10,28 @@ impl Color {
     pub const GREEN: Color = Color { red:   0, green: 255, blue:   0 };
     pub const BLUE:  Color = Color { red:   0, green:   0, blue: 255 };
 
-    /// Interpolates between every adjacent pair of colors in `num_steps` steps.
+    /// Interpolates between every adjacent pair of colors in `frames_per_color` frames.
     ///
-    /// It takes `num_steps` steps to interpolate from one color to the next.
-    /// The last color interpolates to the first color in `num_steps` steps.
+    /// It takes `frames_per_color` frames to interpolate from one color to the next.
+    /// The last color interpolates to the first color in `frames_per_color` frames.
     ///
     /// # Panics
     ///
     /// Panics when no colors are given.
-    pub fn interpolate_linear(colors: &[&Color], step: usize, num_steps: usize) -> Color {
+    pub fn interpolate_linear(colors: &[&Color], frame: usize, frames_per_color: usize) -> Color {
         let num_colors = colors.len();
         if num_colors == 0 { panic!("expected colors"); }
-        if num_colors == 1 || num_steps == 0 { return colors[0].clone(); }
+        if num_colors == 1 || frames_per_color == 0 { return colors[0].clone(); }
 
-        let from = step / num_steps % num_colors;
+        let from = frame / frames_per_color % num_colors;
         let to   = (from + 1) % num_colors;
-        Color::step(colors[from], colors[to], step % num_steps, num_steps)
+        Color::step(colors[from], colors[to], frame % frames_per_color, frames_per_color)
     }
 
-    /// Returns the color with values `step` of `num_steps` between `from` and `to`.
-    pub fn step(from: &Color, to: &Color, step: usize, num_steps: usize) -> Color {
-        if num_steps == 0 { return from.clone(); }
-        let ratio = step as f32 / num_steps as f32;
+    /// Returns the color with values `frame` of `frames_per_color` between `from` and `to`.
+    pub fn step(from: &Color, to: &Color, frame: usize, frames_per_color: usize) -> Color {
+        if frames_per_color == 0 { return from.clone(); }
+        let ratio = frame as f32 / frames_per_color as f32;
         Color {
             red:   Color::val_between(  from.red, to.red,   ratio),
             green: Color::val_between(from.green, to.green, ratio),
