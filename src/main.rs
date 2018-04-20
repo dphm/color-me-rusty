@@ -11,17 +11,19 @@ extern {
 /// It takes `frames_per_color` frames to interpolate from red to green,
 /// and `frames_per_color` frames to interpolate from green to blue.
 ///
-/// When `frame` of `frames_per_color` is:
-/// * `0.0`, then the color is red.
-/// * `0.5`, then the color is between red and green.
-/// * `1.0`, then the color is green.
-/// * `1.5`, then the color is between green and blue.
-/// * `2.0`, then the color is blue.
-/// * `2.5`, then the color is between blue and red.
-/// * `3.0`, then the color is red.
+/// When the ratio `frame` divided by `frames_per_color` is:
+/// * `0.0`, then the color is red `[255, 0, 0]`.
+/// * `0.5`, then the color is between red and green `[127, 127, 0]`.
+/// * `1.0`, then the color is green `[0, 255, 0]`.
+/// * `1.5`, then the color is between green and blue `[0, 127, 127]`.
+/// * `2.0`, then the color is blue `[0, 0, 255]`.
+/// * `2.5`, then the color is between blue and red `[127, 0, 127]`.
+/// * `3.0`, then the color is red `[255, 0, 0]`.
 /// * ...
 ///
 /// This function is available in JavaScript via the WebAssembly module instance exports.
+/// It calls the function imported from JavaScript, setColor, passing a pointer to the
+/// offset of the rgb color values in WebAssembly linear memory.
 ///
 /// # Examples
 ///
