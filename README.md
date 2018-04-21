@@ -9,7 +9,7 @@ A demonstration in Rust + WebAssembly to set the background color of a webpage
 ```
 .
 ├── src
-│   └── main.rs
+│   └── lib.rs
 │   └── colors.rs
 ├── target
 │   └── wasm32-unknown-unknown

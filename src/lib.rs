@@ -51,6 +51,3 @@ pub extern "C" fn set_frame_color(frame: u32, frames_per_color: u32) {
     let vals: Vec<u8> = color.values();
     unsafe { setColor(vals.as_ptr()); }
 }
-
-// Required to compile as a binary
-fn main() {}
